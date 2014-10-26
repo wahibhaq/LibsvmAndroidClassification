@@ -88,7 +88,7 @@ def convert2matlab(src_file, Y_file, out_file):
     fout = open(out_file, 'wb')
     csvWriter = csv.writer(fout, delimiter=',')
     csvWriter.writerows(revised_list)
-    fout.close()i
+    fout.close()
     print 'Done! Check', out_file, 'and', Y_file
 
     
