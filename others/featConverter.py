@@ -93,13 +93,13 @@ def convert2matlab(src_file, Y_file, out_file):
 
     
 def print_usage():
-    print "python featConverter.py [src_fiie] [out_file] [Y_file] [inputFormat]"
+    print "python featConverter.py [src_fiie] [Y_file] [out_file] [inputFormat]"
     print "This script helps you convert svm data from csv files to libsvm files and vise versa"
     print "\nFour arguments are needed:"
-    print "src_file: the source file you have, may in either csv or libsvm files"
-    print "Y_file: label file, one row for one label; this may be input or output, depends on the function you select"
-    print "out_file: the file you will get after the conversion"
-    print "inputFormat: type csv or libsvm, we will give you the opposite"
+    print "src_file: the source file you have, may in either csv or libsvm files e.g Xte.csv"
+    print "Y_file: label file, one row for one label; this may be input or output, depends on the function you select e.g Yte.txt"
+    print "out_file: the file you will get after the conversion e.g test_label.libsvm"
+    print "inputFormat: type csv or libsvm, we will give you the opposite e.g csv"
     print "\n"
     print "note:"
     print "for inputFormat is libsvm, we will parse the label-feature-integrated libsvm file and split it into two files"
