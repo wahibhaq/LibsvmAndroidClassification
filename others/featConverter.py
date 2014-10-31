@@ -20,6 +20,7 @@ June 6 2014
 import sys
 import csv
 
+
 def convert2libfm(X_file, Y_file, out_file):
     ## output -> LIBSVM (txt)
     fin = open(X_file, 'rb')
@@ -45,6 +46,29 @@ def convert2libfm(X_file, Y_file, out_file):
         fout.write('\n')
     fout.close()
     print 'Done! Check', out_file
+
+
+#used when there is no Y file and only X_file needs to be converted to libsvm
+def convert2libfm(X_file, out_file):
+    ## output -> LIBSVM (txt)
+    fin = open(X_file, 'rb')
+    feat_list = list(csv.reader(fin, delimiter=','))
+    fin.close()
+
+    #print 'feat_list:', feat_list
+    dim = len(feat_list[0])
+    #print 'dim:', dim
+    fout = open(out_file, 'wb')
+    for idx, feat in enumerate(feat_list):
+        fout.write('')
+        for i in range(0, dim):
+            idx = str(i+1)
+            fout.write(idx+':'+feat[i]+' ')
+            #feat_revised = idx + ':' + feat[i] + ' '
+        fout.write('\n')
+    fout.close()
+    print 'Done! Check', out_file
+
 
 def getMaxLength(matrix):
     maxLen = 0;
@@ -93,17 +117,20 @@ def convert2matlab(src_file, Y_file, out_file):
 
     
 def print_usage():
-    print "python featConverter.py [src_fiie] [Y_file] [out_file] [inputFormat]"
+
+    print "python featConverter.py [src_file] [Y_file] [out_file] [inputFormat]"
     print "This script helps you convert svm data from csv files to libsvm files and vise versa"
     print "\nFour arguments are needed:"
-    print "src_file: the source file you have, may in either csv or libsvm files e.g Xte.csv"
-    print "Y_file: label file, one row for one label; this may be input or output, depends on the function you select e.g Yte.txt"
-    print "out_file: the file you will get after the conversion e.g test_label.libsvm"
-    print "inputFormat: type csv or libsvm, we will give you the opposite e.g csv"
+    print "-> src_file: the source file you have, may in either csv or libsvm files e.g Xte.csv"
+    print "-> Y_file: label file, one row for one label; this may be input or output, depends on the function you select e.g Yte.txt"
+    print "-> out_file: the file you will get after the conversion e.g test_label.libsvm"
+    print "-> inputFormat: type csv or libsvm, we will give you the opposite e.g csv"
     print "\n"
     print "note:"
-    print "for inputFormat is libsvm, we will parse the label-feature-integrated libsvm file and split it into two files"
-    print "on the other hand, if you type csv as the inputFormat, we will integrate the src_file and Y_file into the out_file"
+    print "* For inputFormat is libsvm, we will parse the label-feature-integrated libsvm file and split it into two files"
+    print "* On the other hand, if you type csv as the inputFormat, we will integrate the src_file and Y_file into the out_file"
+    print "* If there is no Y_file and just src_file needs to be converted then just write blank e.g [src_file] [Y_file] blnak [inputFormat]"
+
 if __name__ == '__main__':
     if len(sys.argv) < 5:
         print_usage()
@@ -114,7 +141,11 @@ if __name__ == '__main__':
         inputFormat = sys.argv[4]
 
         if inputFormat == 'csv':
-            convert2libfm(src_file, Y_file, out_file)
+            if Y_file == 'blank':
+                convert2libfm(src_file, out_file)
+            else:
+                convert2libfm(src_file, Y_file, out_file)
+
         elif inputFormat == 'libsvm':
             convert2matlab(src_file, Y_file, out_file)
         
