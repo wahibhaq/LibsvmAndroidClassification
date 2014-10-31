@@ -48,7 +48,11 @@ def convert2libfm(X_file, Y_file, out_file):
     print 'Done! Check', out_file
 
 
-#used when there is no Y file and only X_file needs to be converted to libsvm
+"""
+Only used when intent is to generate an out_file 
+but there's no Y file and only src_file needs to be transformed into libsvm
+"""
+
 def convert2libfm(X_file, out_file):
     ## output -> LIBSVM (txt)
     fin = open(X_file, 'rb')
