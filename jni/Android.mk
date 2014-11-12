@@ -30,6 +30,12 @@ LOCAL_NDK_VERSION := 4
 LOCAL_SDK_VERSION := 10
 
 LOCAL_MODULE    := libLibsvmAndroid
-LOCAL_LDLIBS := -llog
+#LOCAL_LDLIBS := -llog
+
+#newly added
+LOCAL_LDLIBS += -llog -ldl -landroid -lGLESv2 -lEGL 
+
+CPPFLAGS += -fno-strict-aliasing -mfpu=vfp -mfloat-abi=softfp
+LOCAL_CPP_FEATURES := rtti exceptions
 
 include $(BUILD_SHARED_LIBRARY)

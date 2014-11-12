@@ -10,7 +10,9 @@ static jint trainClassifier_libsvm(JNIEnv *env, jobject obj, jint svmType, jint 
 		jdouble degree, jdouble gamma, jdouble coef0, jdouble cost, jdouble nu, jdouble epsilonSVR,
 		jint cacheSize, jdouble epsilon, jint shrinking, jint isProb, jdouble weightCsvc, jint nFold,
 		jstring trainingFileS, jstring modelFileS) {
+
     jboolean isCopy;
+
     const char *trainingFile = env->GetStringUTFChars(trainingFileS, &isCopy);
     const char *modelFile = env->GetStringUTFChars(modelFileS, &isCopy);
 
@@ -22,6 +24,12 @@ static jint trainClassifier_libsvm(JNIEnv *env, jobject obj, jint svmType, jint 
     env->ReleaseStringUTFChars(trainingFileS, trainingFile);
     env->ReleaseStringUTFChars(modelFileS, modelFile);
 
+    //added for fixing : JNI ERROR (app bug): local reference table overflow (max=512)
+    env->DeleteLocalRef(trainingFileS);
+    env->DeleteLocalRef(modelFileS);
+
+
+
     return v;
 }
 
@@ -31,6 +39,9 @@ static jint trainClassifier_array(JNIEnv *env, jobject obj, jint svmType, jint k
 		jint cacheSize, jdouble epsilon, jint shrinking, jint isProb, jdouble weightCsvc, jint nFold,
 		jobjectArray XtrainArr, jintArray YtrainArr, jobjectArray IdxTrainArr, jstring modelFileS) {
     jboolean isCopy;
+
+   	//__android_log_print(ANDROID_LOG_ERROR, "STATUS", "AndroidJNI_source.cpp trainClassifier_array()");
+   	LOGD("STATUS : AndroidJNI_source.cpp trainClassifier_array()");
 
     const char *modelFile = env->GetStringUTFChars(modelFileS, &isCopy);
 
@@ -46,6 +57,7 @@ static jint trainClassifier_array(JNIEnv *env, jobject obj, jint svmType, jint k
 
     /* Load the feature */
     for(int row = 0; row < nRow; row++) {
+
     	// Load from the argument
     	jdoubleArray Xrow = (jdoubleArray)env->GetObjectArrayElement(XtrainArr, row);
     	jintArray idxRow = (jintArray)env->GetObjectArrayElement(IdxTrainArr, row);
@@ -61,6 +73,7 @@ static jint trainClassifier_array(JNIEnv *env, jobject obj, jint svmType, jint k
     	// Copy from the jni types to native primitive types
     	arrayXtr[row] = (double *)calloc(nCol, sizeof(double));
     	arrayIdxTr[row] = (int *)calloc(nCol, sizeof(int));
+
     	for(int col = 0; col < nCol; col++) {
     		arrayXtr[row][col] = arrayXtrJni[col];
     		arrayIdxTr[row][col] = arrayIdxTrJni[col];
@@ -69,6 +82,11 @@ static jint trainClassifier_array(JNIEnv *env, jobject obj, jint svmType, jint k
     	// Release the arrays
     	env->ReleaseDoubleArrayElements(Xrow, arrayXtrJni, JNI_ABORT);
     	env->ReleaseIntArrayElements(idxRow, arrayIdxTrJni, JNI_ABORT);
+
+        //added for fixing : JNI ERROR (app bug): local reference table overflow (max=512)
+    	env->DeleteLocalRef(Xrow);
+    	env->DeleteLocalRef(idxRow);
+
     }
 
     /* Call the interface function */
@@ -83,13 +101,22 @@ static jint trainClassifier_array(JNIEnv *env, jobject obj, jint svmType, jint k
 
     env->ReleaseIntArrayElements(YtrainArr, arrayYtr, 0);
     env->ReleaseStringUTFChars(modelFileS, modelFile);
+
+    //added for fixing : JNI ERROR (app bug): local reference table overflow (max=512)
+    env->DeleteLocalRef(YtrainArr);
+    env->DeleteLocalRef(modelFileS);
+
     return v;
 }
 
 static jint doClassification(JNIEnv *env, jobject obj, jobjectArray valuesArr,
         jobjectArray indicesArr, jint isProb, jstring modelFiles,
         jintArray labelsArr ,jobjectArray probsArr) {
+
+   	LOGD("STATUS : AndroidJNI_source.cpp doClassification()");
+
     jboolean isCopy;
+
     const char *modelFile = env->GetStringUTFChars(modelFiles, &isCopy);
     int *labels = env->GetIntArrayElements(labelsArr, NULL);
 
@@ -127,6 +154,12 @@ static jint doClassification(JNIEnv *env, jobject obj, jobjectArray valuesArr,
         env->ReleaseDoubleArrayElements(vrows, velement, JNI_ABORT);
         env->ReleaseIntArrayElements(irows, ielement, JNI_ABORT);
         env->ReleaseDoubleArrayElements(prows, probs[i], JNI_ABORT);
+
+        //added for fixing : JNI ERROR (app bug): local reference table overflow (max=512)
+         env->DeleteLocalRef(vrows);
+         env->DeleteLocalRef(irows);
+         env->DeleteLocalRef(prows);
+
     }
 
     int r = predict(values, indices, nRow, arrayNcol, isProb, modelFile, labels, probs);
@@ -140,6 +173,11 @@ static jint doClassification(JNIEnv *env, jobject obj, jobjectArray valuesArr,
     free(arrayNcol);
     env->ReleaseIntArrayElements(labelsArr, labels, 0);
     env->ReleaseStringUTFChars(modelFiles, modelFile);
+
+    //added for fixing : JNI ERROR (app bug): local reference table overflow (max=512)
+    env->DeleteLocalRef(labelsArr);
+    env->DeleteLocalRef(modelFiles);
+
     return r;
 }
 
