@@ -21,7 +21,7 @@ import sys
 import csv
 
 
-def convert2libfmnew(X_file, Y_file, out_file):
+def convert2libfm(X_file, Y_file, out_file):
     ## output -> LIBSVM (txt)
     fin = open(X_file, 'rb')
     feat_list = list(csv.reader(fin, delimiter=','))
@@ -53,7 +53,7 @@ Only used when intent is to generate an out_file
 but there's no Y file and only src_file needs to be transformed into libsvm
 """
 
-def convert2libfm(X_file, out_file):
+def convert2libfmnew(X_file, out_file):
     ## output -> LIBSVM (txt)
     fin = open(X_file, 'rb')
     feat_list = list(csv.reader(fin, delimiter=','))
@@ -133,7 +133,7 @@ def print_usage():
     print "note:"
     print "* For inputFormat is libsvm, we will parse the label-feature-integrated libsvm file and split it into two files"
     print "* On the other hand, if you type csv as the inputFormat, we will integrate the src_file and Y_file into the out_file"
-    print "* If there is no Y_file and just src_file needs to be converted then just write blank e.g [src_file] blank [out_file] [inputFormat]"
+    print "* If there is no Y_file and just src_file needs to be converted then just write blank e.g [src_file] blank [out_file e.g Xte.libsvm] [inputFormat]"
 
 if __name__ == '__main__':
     if len(sys.argv) < 5:
@@ -147,9 +147,9 @@ if __name__ == '__main__':
 
         if inputFormat == 'csv':
             if Y_file == 'blank':
-                convert2libfm(src_file, out_file)
+                convert2libfmnew(src_file, out_file)
             else:
-                convert2libfmnew(src_file, Y_file, out_file)
+                convert2libfm(src_file, Y_file, out_file)
 
         elif inputFormat == 'libsvm':
             convert2matlab(src_file, Y_file, out_file)
